@@ -36,7 +36,7 @@ Telegram Username Checker is a Python-based GUI tool that allows users to check 
    pip install requests beautifulsoup4 colorama
 ### Windows
 
-   [Releases (.exe)](https://github.com/MALWAREKILLS/TeleUser/releases/tag/Windows)
+   [Releases (.exe)](https://github.com/MalwareDot/TeleUser/releases/tag/Windows)
 ## Partnership
 
 - [Hack Institute](https://t.me/hack_institute_chat)
