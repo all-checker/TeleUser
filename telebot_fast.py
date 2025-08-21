@@ -62,23 +62,39 @@ class TelegramChecker:
             await self.session.close()
     
     async def check_username_availability(self, username):
-        """Check if a Telegram username is available"""
+        """
+        Check if a Telegram username is available
+        
+        Fragment.com behavior:
+        - TAKEN usernames: Stay on original URL and contain 'tm-status-taken'
+        - AVAILABLE usernames: Redirect to search query (?query=username)
+        - UNAVAILABLE usernames: Stay on original URL and contain 'tm-status-unavail'
+        """
         url = f"https://fragment.com/username/{username}"
         
         try:
             async with self.session.get(url) as response:
                 if response.status == 200:
+                    # Check if we were redirected to a search query
+                    # This happens when the username is available
+                    final_url = str(response.url)
+                    if "query=" in final_url:
+                        return "available"
+                    
+                    # If not redirected, check the page content for status indicators
                     text = await response.text()
                     
                     # Check different status indicators
-                    if 'tm-status-avail' in text:
-                        return "available"
-                    elif 'tm-status-taken' in text:
+                    if 'tm-status-taken' in text:
                         return "taken"
+                    elif 'tm-status-avail' in text:
+                        return "available"
                     elif 'tm-status-unavail' in text:
                         return "unavailable"
                     else:
-                        return "available"  # Default to available if unclear
+                        # If no clear status and no redirect, assume taken
+                        # (this is safer than defaulting to available)
+                        return "taken"
                 else:
                     return f"HTTP {response.status}"
                     
